@@ -1,7 +1,7 @@
 <template>
   <div>
     <div >
-      <el-row :gutter="20" id="start" style="margin:0">
+      <el-row :gutter="20" id="start" style="margin:0" v-if="this.$route.path=='/home'|this.$route.path=='/my'| this.$route.path=='/classification'| this.$route.path=='/cart'">
         <el-col :span="6" v-for="item in menus" :key="item.name">
            <router-link :to="item.path" active-class="current">
           <div class="grid-content bg-purple">
@@ -27,18 +27,17 @@ export default {
           path: "/home",
           text: "首页",
           icon:"el-icon-house"
+        },{
+          name: "classification",
+          path: "/classification",
+          text: "分类",
+          icon:"el-icon-s-operation"
         },
         {
           name: "cart",
           path: "/cart",
           text: "购物车",
           icon:"el-icon-shopping-cart-full"
-        },
-        {
-          name: "classification",
-          path: "/classification",
-          text: "分类",
-          icon:"el-icon-s-operation"
         },
         {
           name: "my",

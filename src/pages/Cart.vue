@@ -28,12 +28,13 @@
             circle
             size="mini"
             style="margin-top:10px;"
+            @click="remove(idx)"
           ></el-button>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24" style="text-align:right;margin-top:20px;">
-          <el-button type="danger" icon="el-icon-delete" size="mini">清空购物车</el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeAll">清空购物车</el-button>
         </el-col>
       </el-row>
     </div>
@@ -57,24 +58,21 @@ export default {
         {
           id: "1",
           name: "送恋人鲜花",
-          imgurl:
-            require("../imgs/m_category_flowers_occ_Love.png"),
+          imgurl: require("../imgs/m_category_flowers_occ_Love.png"),
           price: 198,
           qty: 10
         },
         {
           id: "2",
           name: "生日鲜花",
-          imgurl:
-            require("../imgs/m_category_flowers_occ_Birthday.png"),
+          imgurl: require("../imgs/m_category_flowers_occ_Birthday.png"),
           price: 299,
           qty: 2
         },
         {
           id: "3",
           name: "巧罗巧克力",
-          imgurl:
-            require("../imgs/m_category_hot_Chocolate_qiaoluo.png"),
+          imgurl: require("../imgs/m_category_hot_Chocolate_qiaoluo.png"),
           price: 399,
           qty: 1
         }
@@ -98,6 +96,12 @@ export default {
   methods: {
     goOff() {
       this.$router.go(-1);
+    },
+    remove(idx) {
+      this.datalist.splice(idx, 1);
+    },
+    removeAll(){
+        this.datalist.splice(0,this.datalist.length);
     }
   }
 };

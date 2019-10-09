@@ -1,15 +1,13 @@
 <template>
   <div>
-    <h1>免费注册</h1>
-    <el-form
-      :model="ruleForm"
-      :rules="rules"
-      ref="regForm"
-      status-icon
-      label-width="100px"
-    >
+    <div><header>
+      <i class="el-icon-arrow-left" @click="goto()"></i>
+      注册
+    </header></div>
+   <div style="padding-right:20px">
+      <el-form :model="ruleForm" :rules="rules" ref="regForm" status-icon label-width="80px">
       <el-form-item label="用户名" prop="username">
-        <el-input v-model="ruleForm.username"></el-input>
+        <el-input v-model="ruleForm.username" style="wigth:80%"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
         <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
@@ -19,25 +17,43 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="submitForm">注册</el-button>
+        <el-button type="primary" @click.native="submitForm" style="width:260px;height:46px">注册</el-button>
       </el-form-item>
     </el-form>
+    <p @click="gofo()">账号密码登录 ></p>
+   </div>
+
+    <!-- <router-link :to="{name:'home',params:{a:10,b:20}}">跳首页</router-link> -->
   </div>
 </template>
 <script>
 export default {
   data() {
     const validatePass = (rule, value, callback) => {
-        console.log('validatePass',rule, value, callback)
-    //   if (value === "") {
-    //     callback(new Error("请再次输入密码"));
-    //   } else 
-      
+      //window.console.log("validatePass", rule, value, callback);
+      //   if (value === "") {
+      //     callback(new Error("请再次输入密码"));
+      //   } else
+
       if (value !== this.ruleForm.password) {
         //   校验失败
         callback(new Error("两次输入密码不一致!"));
       } else {
         //   通过校验
+        callback();
+      }
+    };
+
+    // 校验用户名是否存在
+    const checkUsername = async (rule, value, callback) => {
+      let { data } = await this.$axios.get("http://localhost:1906/user/check", {
+        params: {
+          username: this.ruleForm.username
+        }
+      });
+      if (data.code === 0) {
+        callback(new Error("用户名已存在"));
+      } else {
         callback();
       }
     };
@@ -58,38 +74,78 @@ export default {
           }
         ],
         checkPass: [
-            { required: true, message: "请确认密码", trigger: "blur" },
-            { validator: validatePass, trigger: "blur" }
-            ],
+          { required: true, message: "请确认密码", trigger: "blur" },
+          { validator: validatePass, trigger: "blur" }
+        ],
         username: [
-          { required: true, message: "亲，用户名必须填写哟", trigger: "blur" }
+          { required: true, message: "亲，用户名必须填写哟", trigger: "blur" },
+          { validator: checkUsername, trigger: "blur" }
         ]
       }
     };
   },
-  methods:{
-      submitForm() {
-        //   校验整个表单
-        this.$refs.regForm.validate((valid) => {
-            // valid： 所有校验规则都通过后，得到true，只要有一个表单元素校验不通过则得到form
-          if (valid) {
-            // alert('submit!');
-            // 发起ajax请求，等待服务器返回结果
-            // 根据服务器返回结果：注册成功->跳到“我的”
+  methods: {
+    goto(){
+                this.$router.go(-1)
+            },
+    gofo(){
+      this.$router.push('/login')
+    },
+    submitForm() {
+      //   校验整个表单
+      this.$refs.regForm.validate(async valid => {
+        // valid： 所有校验规则都通过后，得到true，只要有一个表单元素校验不通过则得到form
+        if (valid) {
+          // alert('submit!');
+          // 发起ajax请求，等待服务器返回结果
+          // 根据服务器返回结果：注册成功->跳到“我的”
 
-            // this.$router.replace('/mine')
-            let {username} = this.ruleForm
-            this.$router.replace({name:'mine',params:{username},query:{username}})
-            // this.$router.replace({path:'/mine',params:{username}})
+          let { username, password } = this.ruleForm;
+
+          let { data } = await this.$axios.post(
+            "http://localhost:1906/user/reg",
+            {
+              username,
+              password
+            }
+          );
+          console.log("data:", data);
+
+          // this.$router.replace('/mine')
+          if (data.code === 1) {
+            // this.$router.replace({
+            //   name: "mine",
+            //   params: { username },
+            //   query: { username }
+            // });
+             this.$router.replace({path:'/my',params:{username}})
           } else {
-            console.log('error submit!!');
-            return false;
+            alert("注册失败");
           }
-        });
-      },
+        } else {
+          window.console.log("error submit!!");
+          return false;
+        }
+      });
+    }
   }
 };
 </script>
-<style scoped>
-
+<style lang="scss" scoped>
+header {
+  width: 100%;
+  height: 48px;
+  background-color: #fff;
+  text-align: center;
+  line-height: 48px;
+  color: #000;
+  position: relative;
+  border-bottom: 1px solid #ccc;
+  i {
+    font-size: 30px;
+    position: absolute;
+    top: 10px;
+    left: 20px;
+  }
+}
 </style>
